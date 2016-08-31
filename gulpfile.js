@@ -3,6 +3,7 @@
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
+const jsdox = require('jsdox');
 const gulp = require('gulp');
 const del = require('del');
 
@@ -13,14 +14,14 @@ const paths = {
 /**
  * Clean the dist folder.
  */
-gulp.task('clean', () => {
+gulp.task('build:clean', () => {
   del.sync('dist');
 });
 
 /**
  * Minify and copy to dist folder.
  */
-gulp.task('minify', ['clean'], () => {
+gulp.task('build:minify', () => {
   return gulp.src(paths.scripts)
     .pipe(sourcemaps.init())
     .pipe(uglify())
@@ -34,7 +35,7 @@ gulp.task('minify', ['clean'], () => {
 /**
  * Beautify and copy to dist folder.
  */
-gulp.task('beautify', ['minify'], () => {
+gulp.task('build:beautify', () => {
   return gulp.src(paths.scripts)
     .pipe(uglify({
       mangle: false,
@@ -48,14 +49,25 @@ gulp.task('beautify', ['minify'], () => {
     .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('build', ['beautify']);
+/**
+ * Generate documentation.
+ */
+gulp.task('docs:clean', () => {
+  return del.sync('docs/**.*');
+});
+
+gulp.task('docs:compile', (done) => {
+  jsdox.generateForDir('./src', './docs', null, done);
+});
 
 /**
  * Watch for file changes.
  */
 gulp.task('watch', ['default'], () => {
-  gulp.watch(paths.scripts, ['build']);
+  gulp.watch(paths.scripts, ['default']);
 });
 
 /* Default task */
-gulp.task('default', ['clean', 'build']);
+gulp.task('default', ['build', 'docs']);
+gulp.task('docs', ['docs:clean', 'docs:compile']);
+gulp.task('build', ['build:clean', 'build:minify', 'build:beautify']);

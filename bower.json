@@ -29,6 +29,7 @@
     ".travis.yml",
     ".gitignore",
     "*.log",
+    "docs",
     "test",
     "src"
   ]

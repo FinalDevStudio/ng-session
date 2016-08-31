@@ -8,19 +8,26 @@
   };
   function ngSessionServiceFn($rootScope, $http) {
     $rootScope.session = {};
-    function onSingInSuccess(res) {
+    function onSessionUpdateSuccess(res) {
       $rootScope.session.user = res.data;
       return res;
     }
-    function signIn(data, options) {
-      return $http.post(config.signInUrl, data, options).then(onSingInSuccess);
+    function onSingInSuccess() {
+      return update().then(onSessionUpdateSuccess);
     }
     function onSingOutSuccess(res) {
       $rootScope.session.user = null;
       return res;
     }
+    function signIn(data, options) {
+      $rootScope.session.user = null;
+      return $http.post(config.signInUrl, data, options).then(onSingInSuccess);
+    }
     function signOut(data, options) {
       return $http.post(config.signOutUrl, data, options).then(onSingOutSuccess);
+    }
+    function update(options) {
+      return $http.get(config.updateUrl, options).then(onSessionUpdateSuccess);
     }
     function user(prop) {
       if (prop && $rootScope.session.user) {
@@ -36,12 +43,6 @@
     }
     function del(prop) {
       delete $rootScope.session[prop];
-    }
-    function onGetSessionSuccess(res) {
-      signIn(res.data);
-    }
-    function update(url) {
-      return $http.get(url || config.url).then(onGetSessionSuccess);
     }
     var ngSessionServiceDef = {
       signOut: signOut,

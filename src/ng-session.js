@@ -13,30 +13,32 @@
   /**
    * ngSession service function.
    */
-  function ngSessionServiceFn($rootScope, $http) {
+  function ngSessionServiceFn($rootScope, $http, $q) {
     $rootScope.session = {};
 
     /**
      * Session update successful.
      */
-    function onSessionUpdateSuccess(res) {
+    function onSessionUpdateSuccess(deferred, res) {
       $rootScope.session.user = res.data;
-      return res;
+
+      deferred.resolve(res);
     }
 
     /**
      * On Sign In success.
      */
-    function onSingInSuccess() {
-      return update().then(onSessionUpdateSuccess);
+    function onSingInSuccess(deferred) {
+      return update(null, deferred);
     }
 
     /**
      * On Sign Out success.
      */
-    function onSingOutSuccess(res) {
+    function onSingOutSuccess(deferred, res) {
       $rootScope.session.user = null;
-      return res;
+
+      deferred.resolve(res);
     }
 
     /**
@@ -52,11 +54,16 @@
      * request's `res` object.
      */
     function signIn(data, options) {
+      var deferred = $q.defer();
+
       /* Remove previous user object */
       $rootScope.session.user = null;
 
-      return $http.post(config.signInUrl, data, options)
-        .then(onSingInSuccess);
+      $http.post(config.signInUrl, data, options)
+        .then(onSingInSuccess.bind(null, deferred))
+        .catch(deferred.reject);
+
+      return deferred.promise;
     }
 
     /**
@@ -72,8 +79,13 @@
      * request's `res` object.
      */
     function signOut(data, options) {
-      return $http.post(config.signOutUrl, data, options)
-        .then(onSingOutSuccess);
+      var deferred = $q.defer();
+
+      $http.post(config.signOutUrl, data, options)
+        .then(onSingOutSuccess.bind(null, deferred))
+        .catch(deferred.reject);
+
+      return deferred.promise;
     }
 
     /**
@@ -83,14 +95,22 @@
      * session's user object on success with the request's `res.data`.
      *
      * @param {Object} options Optional AngularJS HTTP request options.
+     * @param {Promise} deferred Optional deferred promise object.
      *
      * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
      * request's `res` object.
      */
-    function update(options) {
+    function update(options, deferred) {
+      if (!deferred) {
+        deferred = $q.defer();
+      }
+
       /* Retrieve current session */
-      return $http.get(config.updateUrl, options)
-        .then(onSessionUpdateSuccess);
+      $http.get(config.updateUrl, options || {})
+        .then(onSessionUpdateSuccess.bind(null, deferred))
+        .catch(deferred.reject);
+
+      return deferred.promise;
     }
 
     /**
@@ -166,9 +186,19 @@
    * @param {Object} config The configuration object.
    */
   function configure(cfg) {
-    /* Sets default session GET URL */
-    if (ng.isString(cfg.url)) {
-      config.url = cfg.url;
+    /* Sets session update GET URL */
+    if (ng.isString(cfg.updateUrl)) {
+      config.updateUrl = cfg.updateUrl;
+    }
+
+    /* Sets sign in POST URL */
+    if (ng.isString(cfg.signInUrl)) {
+      config.signInUrl = cfg.signInUrl;
+    }
+
+    /* Sets sign out POST URL */
+    if (ng.isString(cfg.signOutUrl)) {
+      config.signOutUrl = cfg.signOutUrl;
     }
   }
 
@@ -179,7 +209,7 @@
     configure: configure,
 
     $get: [
-      '$rootScope', '$http',
+      '$rootScope', '$http', '$q',
 
       ngSessionServiceFn
     ]

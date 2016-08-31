@@ -43,11 +43,11 @@
       }
       return $rootScope.session.user;
     }
-    function get(prop) {
-      return $rootScope.session[prop];
-    }
     function set(prop, value) {
       $rootScope.session[prop] = value;
+    }
+    function get(prop) {
+      return $rootScope.session[prop];
     }
     function del(prop) {
       delete $rootScope.session[prop];

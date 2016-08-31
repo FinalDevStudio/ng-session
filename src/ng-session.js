@@ -17,10 +17,25 @@
     $rootScope.session = {};
 
     /**
+     * Session update successful.
+     */
+    function onSessionUpdateSuccess(res) {
+      $rootScope.session.user = res.data;
+      return res;
+    }
+
+    /**
      * On Sign In success.
      */
-    function onSingInSuccess(res) {
-      $rootScope.session.user = res.data;
+    function onSingInSuccess() {
+      return update().then(onSessionUpdateSuccess);
+    }
+
+    /**
+     * On Sign Out success.
+     */
+    function onSingOutSuccess(res) {
+      $rootScope.session.user = null;
       return res;
     }
 
@@ -37,16 +52,11 @@
      * request's `res` object.
      */
     function signIn(data, options) {
+      /* Remove previous user object */
+      $rootScope.session.user = null;
+
       return $http.post(config.signInUrl, data, options)
         .then(onSingInSuccess);
-    }
-
-    /**
-     * On Sign Out success.
-     */
-    function onSingOutSuccess(res) {
-      $rootScope.session.user = null;
-      return res;
     }
 
     /**
@@ -64,6 +74,23 @@
     function signOut(data, options) {
       return $http.post(config.signOutUrl, data, options)
         .then(onSingOutSuccess);
+    }
+
+    /**
+     * Updates the session user object.
+     *
+     * It will perform a GET to the `config.updateUrl` path and set the
+     * session's user object on success with the request's `res.data`.
+     *
+     * @param {Object} options Optional AngularJS HTTP request options.
+     *
+     * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
+     * request's `res` object.
+     */
+    function update(options) {
+      /* Retrieve current session */
+      return $http.get(config.updateUrl, options)
+        .then(onSessionUpdateSuccess);
     }
 
     /**
@@ -110,24 +137,6 @@
      */
     function del(prop) {
       delete $rootScope.session[prop];
-    }
-
-    /**
-     * Session update successful.
-     */
-    function onGetSessionSuccess(res) {
-      signIn(res.data);
-    }
-
-    /**
-     * Updates the session user object.
-     *
-     * @param {String} url URL to overwrite the default update url.
-     */
-    function update(url) {
-      /* Retrieve current session */
-      return $http.get(url || config.url)
-        .then(onGetSessionSuccess);
     }
 
     /* Session service definition */

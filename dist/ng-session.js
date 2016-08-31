@@ -2,49 +2,57 @@
   "use strict";
   var ng = window.angular;
   var config = {
-    url: null
+    signOutUrl: "/api/users/sign-out",
+    signInUrl: "/api/users/sign-in",
+    updateUrl: "/api/session"
   };
   function ngSessionServiceFn($rootScope, $http) {
     $rootScope.session = {};
-    function signin(user) {
-      $rootScope.session.user = user;
+    function onSingInSuccess(res) {
+      $rootScope.session.user = res.data;
+      return res;
     }
-    function signout() {
+    function signIn(data, options) {
+      return $http.post(config.signInUrl, data, options).then(onSingInSuccess);
+    }
+    function onSingOutSuccess(res) {
       $rootScope.session.user = null;
+      return res;
     }
-    function user(field) {
-      if (field && $rootScope.session.user) {
-        return $rootScope.session.user[field];
+    function signOut(data, options) {
+      return $http.post(config.signOutUrl, data, options).then(onSingOutSuccess);
+    }
+    function user(prop) {
+      if (prop && $rootScope.session.user) {
+        return $rootScope.session.user[prop];
       }
-      return !!$rootScope.session.user;
+      return $rootScope.session.user;
     }
-    function get(key) {
-      return $rootScope.session[key];
+    function get(prop) {
+      return $rootScope.session[prop];
     }
-    function set(key, value) {
-      $rootScope.session[key] = value;
+    function set(prop, value) {
+      $rootScope.session[prop] = value;
     }
-    function del(key) {
-      delete $rootScope.session[key];
+    function del(prop) {
+      delete $rootScope.session[prop];
     }
     function onGetSessionSuccess(res) {
-      signin(res.data);
+      signIn(res.data);
     }
     function update(url) {
-      if (!url && !config.url) {
-        throw new Error("Please configure ngSession!");
-      }
       return $http.get(url || config.url).then(onGetSessionSuccess);
     }
-    return {
-      signout: signout,
-      signin: signin,
+    var ngSessionServiceDef = {
+      signOut: signOut,
+      signIn: signIn,
       update: update,
       user: user,
       get: get,
       set: set,
       del: del
     };
+    return ngSessionServiceDef;
   }
   function ngSessionRunFn($session) {
     $session.update();

@@ -57,5 +57,5 @@ gulp.task('watch', ['default'], () => {
   gulp.watch(paths.scripts, ['build']);
 });
 
-// The default task (called when you run `gulp` from cli)
+/* Default task */
 gulp.task('default', ['clean', 'build']);

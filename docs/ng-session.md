@@ -19,8 +19,8 @@ ngSession Service
 
 Signs a user in.
 
-It will perform a `POST` to the `config.signOutUrl` path and assign the
-user object from the `res.data` object on success.
+It will perform a `POST` to the `config.signOutUrl` path and perform an
+`update` if successful.
 
 **Parameters**
 

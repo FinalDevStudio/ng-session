@@ -5,7 +5,9 @@
 
   /* Default configuration */
   var config = {
-    url: null
+    signOutUrl: '/api/users/sign-out',
+    signInUrl: '/api/users/sign-in',
+    updateUrl: '/api/session'
   };
 
   /**
@@ -15,75 +17,131 @@
     $rootScope.session = {};
 
     /**
-     * Sign a user in.
+     * On Sign In success.
      */
-    function signin(user) {
-      $rootScope.session.user = user;
+    function onSingInSuccess(res) {
+      $rootScope.session.user = res.data;
+      return res;
     }
 
     /**
-     * Sign a user out.
+     * Signs a user in.
+     *
+     * It will perform a POST to the `config.signOutUrl` path and assign the
+     * user object from the `res.data` object on success.
+     *
+     * @param {Object} data The data to send for sign in.
+     * @param {Object} options Optional AngularJS HTTP request options.
+     *
+     * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
+     * request's `res` object.
      */
-    function signout() {
-      $rootScope.session.user = null;
+    function signIn(data, options) {
+      return $http.post(config.signInUrl, data, options)
+        .then(onSingInSuccess);
     }
 
-    function user(field) {
-      if (field && $rootScope.session.user) {
-        return $rootScope.session.user[field];
+    /**
+     * On Sign Out success.
+     */
+    function onSingOutSuccess(res) {
+      $rootScope.session.user = null;
+      return res;
+    }
+
+    /**
+     * Signs a user out.
+     *
+     * It will perform a POST to the `config.signOutUrl` path and delete the
+     * user object on success.
+     *
+     * @param {Object} data The optional data to send for sign out.
+     * @param {Object} options Optional AngularJS HTTP request options.
+     *
+     * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
+     * request's `res` object.
+     */
+    function signOut(data, options) {
+      return $http.post(config.signOutUrl, data, options)
+        .then(onSingOutSuccess);
+    }
+
+    /**
+     * Retrieves a user data value by property name.
+     *
+     * @param {String} prop The property name to retrieve.
+     *
+     * @returns {Mixed} value The property's value or the user object if no
+     * property name is provided.
+     */
+    function user(prop) {
+      if (prop && $rootScope.session.user) {
+        return $rootScope.session.user[prop];
       }
 
-      return !!$rootScope.session.user;
-    }
-
-    function get(key) {
-      return $rootScope.session[key];
-    }
-
-    function set(key, value) {
-      $rootScope.session[key] = value;
+      return $rootScope.session.user;
     }
 
     /**
-     * Removes a property from the session object.
+     * Obtains a value from the session object.
      *
-     * @param {String} key The property name.
+     * @param {String} prop The property name to obtain.
+     *
+     * @returns {Mixed} value The property's value.
      */
-    function del(key) {
-      delete $rootScope.session[key];
+    function get(prop) {
+      return $rootScope.session[prop];
+    }
+
+    /**
+     * Sets a value in the session object.
+     *
+     * @param {String} prop The property name to set.
+     * @param {Mixed} value The property value to set.
+     */
+    function set(prop, value) {
+      $rootScope.session[prop] = value;
+    }
+
+    /**
+     * Deletes a property from the session object.
+     *
+     * @param {String} prop The property name.
+     */
+    function del(prop) {
+      delete $rootScope.session[prop];
     }
 
     /**
      * Session update successful.
      */
     function onGetSessionSuccess(res) {
-      signin(res.data);
+      signIn(res.data);
     }
 
     /**
      * Updates the session user object.
      *
-     * @param {String} url URL to overwrite the default url.
+     * @param {String} url URL to overwrite the default update url.
      */
     function update(url) {
-      if (!url && !config.url) {
-        throw new Error('Please configure ngSession!');
-      }
-
       /* Retrieve current session */
       return $http.get(url || config.url)
         .then(onGetSessionSuccess);
     }
 
-    return {
-      signout: signout,
-      signin: signin,
+    /* Session service definition */
+    var ngSessionServiceDef = {
+      signOut: signOut,
+      signIn: signIn,
       update: update,
       user: user,
       get: get,
       set: set,
       del: del
     };
+
+    return ngSessionServiceDef;
   }
 
   /**

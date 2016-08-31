@@ -1,3 +1,12 @@
+/**
+ * ngSession
+ *
+ * @description Session handler module for AngularJS.
+ * @module ngSession
+ * @author Final Development Studio
+ * @license MIT
+ */
+
 (function (window) {
   'use strict';
 
@@ -12,12 +21,21 @@
 
   /**
    * ngSession service function.
+   *
+   * @private
    */
   function ngSessionServiceFn($rootScope, $http, $q) {
     $rootScope.session = {};
 
     /**
+     * @module ngSession
+     * @description ngSession Service
+     */
+
+    /**
      * Session update successful.
+     *
+     * @private
      */
     function onSessionUpdateSuccess(deferred, res) {
       $rootScope.session.user = res.data;
@@ -27,6 +45,8 @@
 
     /**
      * On Sign In success.
+     *
+     * @private
      */
     function onSingInSuccess(deferred) {
       return update(null, deferred);
@@ -34,6 +54,8 @@
 
     /**
      * On Sign Out success.
+     *
+     * @private
      */
     function onSingOutSuccess(deferred, res) {
       $rootScope.session.user = null;
@@ -44,7 +66,7 @@
     /**
      * Signs a user in.
      *
-     * It will perform a POST to the `config.signOutUrl` path and assign the
+     * It will perform a `POST` to the `config.signOutUrl` path and assign the
      * user object from the `res.data` object on success.
      *
      * @param {Object} data The data to send for sign in.
@@ -52,6 +74,11 @@
      *
      * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
      * request's `res` object.
+     *
+     * @example
+     * ngSession.signIn($scope.data)
+     *   .then(function (res) {})
+     *   .catch(function (res) {})
      */
     function signIn(data, options) {
       var deferred = $q.defer();
@@ -77,6 +104,11 @@
      *
      * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
      * request's `res` object.
+     *
+     * @example
+     * ngSession.signOut($scope.data)
+     *   .then(function (res) {})
+     *   .catch(function (res) {})
      */
     function signOut(data, options) {
       var deferred = $q.defer();
@@ -99,6 +131,11 @@
      *
      * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
      * request's `res` object.
+     *
+     * @example
+     * ngSession.update($scope.data)
+     *   .then(function (res) {})
+     *   .catch(function (res) {})
      */
     function update(options, deferred) {
       if (!deferred) {
@@ -120,6 +157,8 @@
      *
      * @returns {Mixed} value The property's value or the user object if no
      * property name is provided.
+     *
+     * @example ngSession.user('name'); // => 'John Smith'
      */
     function user(prop) {
       if (prop && $rootScope.session.user) {
@@ -130,30 +169,38 @@
     }
 
     /**
+    * Sets a value in the session object.
+    *
+    * @param {String} prop The property name to set.
+    * @param {Mixed} value The property value to set.
+    *
+    * @example ngSession.set('test', 'Test Value');
+    */
+    function set(prop, value) {
+      $rootScope.session[prop] = value;
+    }
+
+    /**
      * Obtains a value from the session object.
      *
      * @param {String} prop The property name to obtain.
      *
      * @returns {Mixed} value The property's value.
+     *
+     * @example ngSession.get('test'); // => 'Test Value'
      */
     function get(prop) {
       return $rootScope.session[prop];
     }
 
     /**
-     * Sets a value in the session object.
-     *
-     * @param {String} prop The property name to set.
-     * @param {Mixed} value The property value to set.
-     */
-    function set(prop, value) {
-      $rootScope.session[prop] = value;
-    }
-
-    /**
      * Deletes a property from the session object.
      *
      * @param {String} prop The property name.
+     *
+     * @example
+     * ngSession.del('test');
+     * ngSession.get('test'); // => null
      */
     function del(prop) {
       delete $rootScope.session[prop];
@@ -175,15 +222,29 @@
 
   /**
    * ngSession run function.
+   *
+   * @private
    */
   function ngSessionRunFn($session) {
     $session.update();
   }
 
   /**
+   * @module ngSessionProvider
+   * @description ngSession Provider
+   */
+
+  /**
    * Configuration method.
    *
    * @param {Object} config The configuration object.
+   *
+   * @example
+   * ngSessionProvider.configure({
+   *   signOutUrl: '/api/users/sign-out',
+   *   signInUrl: '/api/users/sign-in',
+   *   updateUrl: '/api/session'
+   * });
    */
   function configure(cfg) {
     /* Sets session update GET URL */
@@ -204,6 +265,8 @@
 
   /**
    * ngSession provider definition.
+   *
+   * @private
    */
   var ngSessionProviderDef = {
     configure: configure,
@@ -217,6 +280,8 @@
 
   /**
    * ngSession provider function.
+   *
+   * @private
    */
   function ngSessionProviderFn() {
     return ngSessionProviderDef;

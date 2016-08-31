@@ -107,3 +107,7 @@ angular.module('MyApp').controller('MyController', [
   }
 ]);
 ```
+
+## Documentation
+
+To learn more please view the [API Docs](docs/ng-session.md).

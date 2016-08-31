@@ -1,4 +1,4 @@
-# ng-session
+# ng-session [![Build Status](https://travis-ci.org/FinalDevStudio/ng-session.svg?branch=master)](https://travis-ci.org/FinalDevStudio/ng-session)
 
 Session handler for AngularJS
 

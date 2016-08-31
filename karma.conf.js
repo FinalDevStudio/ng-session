@@ -15,11 +15,10 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js',
       'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js',
       'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-mocks.js',
 
-      'dist/ng-flashes.js',
+      'dist/ng-session.js',
 
       'test/unit/**/*.spec.js'
     ],

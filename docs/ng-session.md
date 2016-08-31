@@ -28,8 +28,7 @@ It will perform a `POST` to the `config.signOutUrl` path and perform an
 
 **options**: `Object`, Optional AngularJS HTTP request options.
 
-**Returns**: `Promise`, req The AngularJS HTTP promise. Will pass along the
-request's `res` object.
+**Returns**: `Promise`, A promise resolving the request's `res` object.
 
 **Example**:
 ```js
@@ -52,8 +51,7 @@ user object on success.
 
 **options**: `Object`, Optional AngularJS HTTP request options.
 
-**Returns**: `Promise`, req The AngularJS HTTP promise. Will pass along the
-request's `res` object.
+**Returns**: `Promise`, A promise resolving the request's `res` object.
 
 **Example**:
 ```js
@@ -76,8 +74,7 @@ session's user object on success with the request's `res.data`.
 
 **deferred**: `Promise`, Optional deferred promise object.
 
-**Returns**: `Promise`, req The AngularJS HTTP promise. Will pass along the
-request's `res` object.
+**Returns**: `Promise`, A promise resolving the request's `res` object.
 
 **Example**:
 ```js
@@ -95,7 +92,7 @@ Retrieves a user data value by property name.
 
 **prop**: `String`, The property name to retrieve.
 
-**Returns**: `Mixed`, value The property's value or the user object if no
+**Returns**: `Mixed`, The property's value or the user object if no
 property name is provided.
 
 **Example**:
@@ -104,7 +101,7 @@ ngSession.user('name'); // => 'John Smith'
 ```
 
 
-### ngSession.set(prop, value) 
+### ngSession.set(prop, The) 
 
 Sets a value in the session object.
 
@@ -112,7 +109,7 @@ Sets a value in the session object.
 
 **prop**: `String`, The property name to set.
 
-**value**: `Mixed`, The property value to set.
+**The**: `Mixed`, property value to set.
 
 
 **Example**:
@@ -129,7 +126,7 @@ Obtains a value from the session object.
 
 **prop**: `String`, The property name to obtain.
 
-**Returns**: `Mixed`, value The property's value.
+**Returns**: `Mixed`, The property's value.
 
 **Example**:
 ```js

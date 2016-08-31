@@ -72,8 +72,7 @@
      * @param {Object} data The data to send for sign in.
      * @param {Object} options Optional AngularJS HTTP request options.
      *
-     * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
-     * request's `res` object.
+     * @returns {Promise} A promise resolving the request's `res` object.
      *
      * @example
      * ngSession.signIn($scope.data)
@@ -102,8 +101,7 @@
      * @param {Object} data The optional data to send for sign out.
      * @param {Object} options Optional AngularJS HTTP request options.
      *
-     * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
-     * request's `res` object.
+     * @returns {Promise} A promise resolving the request's `res` object.
      *
      * @example
      * ngSession.signOut($scope.data)
@@ -129,8 +127,7 @@
      * @param {Object} options Optional AngularJS HTTP request options.
      * @param {Promise} deferred Optional deferred promise object.
      *
-     * @returns {Promise} req The AngularJS HTTP promise. Will pass along the
-     * request's `res` object.
+     * @returns {Promise} A promise resolving the request's `res` object.
      *
      * @example
      * ngSession.update($scope.data)
@@ -155,7 +152,7 @@
      *
      * @param {String} prop The property name to retrieve.
      *
-     * @returns {Mixed} value The property's value or the user object if no
+     * @returns {Mixed} The property's value or the user object if no
      * property name is provided.
      *
      * @example ngSession.user('name'); // => 'John Smith'
@@ -169,13 +166,13 @@
     }
 
     /**
-    * Sets a value in the session object.
-    *
-    * @param {String} prop The property name to set.
-    * @param {Mixed} value The property value to set.
-    *
-    * @example ngSession.set('test', 'Test Value');
-    */
+     * Sets a value in the session object.
+     *
+     * @param {String} prop The property name to set.
+     * @param {Mixed} The property value to set.
+     *
+     * @example ngSession.set('test', 'Test Value');
+     */
     function set(prop, value) {
       $rootScope.session[prop] = value;
     }
@@ -185,7 +182,7 @@
      *
      * @param {String} prop The property name to obtain.
      *
-     * @returns {Mixed} value The property's value.
+     * @returns {Mixed} The property's value.
      *
      * @example ngSession.get('test'); // => 'Test Value'
      */

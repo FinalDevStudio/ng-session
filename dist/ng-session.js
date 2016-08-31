@@ -6,28 +6,36 @@
     signInUrl: "/api/users/sign-in",
     updateUrl: "/api/session"
   };
-  function ngSessionServiceFn($rootScope, $http) {
+  function ngSessionServiceFn($rootScope, $http, $q) {
     $rootScope.session = {};
-    function onSessionUpdateSuccess(res) {
+    function onSessionUpdateSuccess(deferred, res) {
       $rootScope.session.user = res.data;
-      return res;
+      deferred.resolve(res);
     }
-    function onSingInSuccess() {
-      return update().then(onSessionUpdateSuccess);
+    function onSingInSuccess(deferred) {
+      return update(null, deferred);
     }
-    function onSingOutSuccess(res) {
+    function onSingOutSuccess(deferred, res) {
       $rootScope.session.user = null;
-      return res;
+      deferred.resolve(res);
     }
     function signIn(data, options) {
+      var deferred = $q.defer();
       $rootScope.session.user = null;
-      return $http.post(config.signInUrl, data, options).then(onSingInSuccess);
+      $http.post(config.signInUrl, data, options).then(onSingInSuccess.bind(null, deferred)).catch(deferred.reject);
+      return deferred.promise;
     }
     function signOut(data, options) {
-      return $http.post(config.signOutUrl, data, options).then(onSingOutSuccess);
+      var deferred = $q.defer();
+      $http.post(config.signOutUrl, data, options).then(onSingOutSuccess.bind(null, deferred)).catch(deferred.reject);
+      return deferred.promise;
     }
-    function update(options) {
-      return $http.get(config.updateUrl, options).then(onSessionUpdateSuccess);
+    function update(options, deferred) {
+      if (!deferred) {
+        deferred = $q.defer();
+      }
+      $http.get(config.updateUrl, options || {}).then(onSessionUpdateSuccess.bind(null, deferred)).catch(deferred.reject);
+      return deferred.promise;
     }
     function user(prop) {
       if (prop && $rootScope.session.user) {
@@ -59,13 +67,19 @@
     $session.update();
   }
   function configure(cfg) {
-    if (ng.isString(cfg.url)) {
-      config.url = cfg.url;
+    if (ng.isString(cfg.updateUrl)) {
+      config.updateUrl = cfg.updateUrl;
+    }
+    if (ng.isString(cfg.signInUrl)) {
+      config.signInUrl = cfg.signInUrl;
+    }
+    if (ng.isString(cfg.signOutUrl)) {
+      config.signOutUrl = cfg.signOutUrl;
     }
   }
   var ngSessionProviderDef = {
     configure: configure,
-    $get: [ "$rootScope", "$http", ngSessionServiceFn ]
+    $get: [ "$rootScope", "$http", "$q", ngSessionServiceFn ]
   };
   function ngSessionProviderFn() {
     return ngSessionProviderDef;

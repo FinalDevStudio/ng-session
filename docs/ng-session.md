@@ -101,6 +101,28 @@ ngSession.user('name'); // => 'John Smith'
 ```
 
 
+### ngSession.hasRole(roles, all) 
+
+Checks if the current user has any or all of the provided roles.
+
+**Parameters**
+
+**roles**: `String | Array.&lt;String&gt;`, The required roles. Can be a single
+  string or a string array.
+
+**all**: `Boolean`, If all the provided roles are required.
+
+**Returns**: `Boolean`
+
+**Example**:
+```js
+ngSession.hasRoles('ROLE.ADMIN'); // => false
+ngSession.hasRoles('ROLE.USER'); // => true
+ngSession.hasRoles(['ROLE.ADMIN', 'ROLE.USER']); // => true
+ngSession.hasRoles(['ROLE.ADMIN', 'ROLE.USER'], true); // => false
+```
+
+
 ### ngSession.set(prop, The) 
 
 Sets a value in the session object.

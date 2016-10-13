@@ -38,10 +38,36 @@
       return deferred.promise;
     }
     function user(prop) {
-      if (prop && $rootScope.session.user) {
-        return $rootScope.session.user[prop];
+      var session = $rootScope.session;
+      if (!session) {
+        return null;
       }
-      return $rootScope.session.user;
+      if (prop && session.user) {
+        return session.user[prop];
+      }
+      return session.user;
+    }
+    function hasRole(roles, all) {
+      var actual = user("roles");
+      var matches = 0;
+      if (!actual || !actual.length) {
+        return false;
+      }
+      if (ng.isString(actual)) {
+        actual = [ actual ];
+      }
+      if (ng.isString(roles)) {
+        roles = [ roles ];
+      }
+      for (var i = 0, l = roles.length; i < l; i++) {
+        if (actual.indexOf(roles[i]) > -1) {
+          matches++;
+        }
+      }
+      if (all) {
+        return matches === roles.length;
+      }
+      return !!matches;
     }
     function set(prop, value) {
       $rootScope.session[prop] = value;
@@ -53,6 +79,7 @@
       delete $rootScope.session[prop];
     }
     var ngSessionServiceDef = {
+      hasRole: hasRole,
       signOut: signOut,
       signIn: signIn,
       update: update,

@@ -60,7 +60,7 @@ Method    | Arguments                           | Description
 `signIn`  | `data`:`Object`, `options`:`Object` | Signs a user in and updates the session with the user's data. Argument `data` must contain the POST data to send to the server. Argument `options` can be a valid AngularJS HTTP options object.
 `signOut` | `data`:`Object`, `options`:`Object` | Signs a user out. Argument `data` can be a POST data object. Argument `options` can be a valid AngularJS HTTP options object.
 `user`    | `prop`:`String`                     | Retrieves a property from the `session.user` object if any. If no argument is passed it will return the whole object.
-`hasRoles`    | `prop`:`String | String[]`      | Checks if the current user has any or all of the provided roles.
+`hasRole`    | `prop`:`String | String[]`      | Checks if the current user has any or all of the provided roles.
 `set`     | `prop`:`String`, `value`:`Mixed`    | Sets a value into the session object. Argument `prop` must be a property name to assign the value to. Argument `value` must be the value to assign.
 `get`     | `prop`:`String`                     | Obtains a value from the session object. Argument `prop` must be the property name to retrieve the value from.
 `del`     | `prop`:`String`                     | Deletes a property from the session object. Argument `prop` must be the property name to delete.

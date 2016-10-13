@@ -158,11 +158,61 @@
      * @example ngSession.user('name'); // => 'John Smith'
      */
     function user(prop) {
-      if (prop && $rootScope.session.user) {
-        return $rootScope.session.user[prop];
+      var session = $rootScope.session;
+
+      if (!session) {
+        return null;
       }
 
-      return $rootScope.session.user;
+      if (prop && session.user) {
+        return session.user[prop];
+      }
+
+      return session.user;
+    }
+
+    /**
+     * Checks if the current user has any or all of the provided roles.
+     *
+     * @param {(String|String[])} roles The required roles. Can be a single
+     *   string or a string array.
+     * @param {Boolean} all If all the provided roles are required.
+     *
+     * @return {Boolean}
+     *
+     * @example
+     * ngSession.hasRoles('ROLE.ADMIN'); // => false
+     * ngSession.hasRoles('ROLE.USER'); // => true
+     * ngSession.hasRoles(['ROLE.ADMIN', 'ROLE.USER']); // => true
+     * ngSession.hasRoles(['ROLE.ADMIN', 'ROLE.USER'], true); // => false
+     */
+    function hasRole(roles, all) {
+      var actual = user('roles');
+      var matches = 0;
+
+      if (!actual || !actual.length) {
+        return false;
+      }
+
+      if (ng.isString(actual)) {
+        actual = [actual];
+      }
+
+      if (ng.isString(roles)) {
+        roles = [roles];
+      }
+
+      for (var i = 0, l = roles.length; i < l; i++) {
+        if (actual.indexOf(roles[i]) > -1) {
+          matches++;
+        }
+      }
+
+      if (all) {
+        return matches === roles.length;
+      }
+
+      return !!matches;
     }
 
     /**
@@ -205,6 +255,7 @@
 
     /* Session service definition */
     var ngSessionServiceDef = {
+      hasRole: hasRole,
       signOut: signOut,
       signIn: signIn,
       update: update,

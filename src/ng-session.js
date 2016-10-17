@@ -395,10 +395,6 @@
   .provider('ngSession', ngSessionProviderFn)
 
   /* Define AngularJS module run function */
-  .run([
-    '$route',
-
-    ngSessionRunFn
-  ]);
+  .run(['$route', ngSessionRunFn]);
 
 }(window));

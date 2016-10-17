@@ -30,6 +30,13 @@
       $http.post(config.signOutUrl, data, options).then(onSingOutSuccess.bind(null, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
+    function reload(data, options, deferred) {
+      if (!deferred) {
+        deferred = $q.defer();
+      }
+      $http.put(config.updateUrl, data, options || {}).then(update.bind(null, options, deferred)).catch(deferred.reject);
+      return deferred.promise;
+    }
     function update(options, deferred) {
       if (!deferred) {
         deferred = $q.defer();
@@ -82,6 +89,7 @@
       hasRole: hasRole,
       signOut: signOut,
       signIn: signIn,
+      reload: reload,
       update: update,
       user: user,
       get: get,
@@ -90,8 +98,20 @@
     };
     return ngSessionServiceDef;
   }
-  function ngSessionRunFn($session) {
-    $session.update();
+  function sessionResolveFn($session) {
+    return $session.update({
+      cache: true
+    });
+  }
+  var sessionResolveDef = [ "ngSession", sessionResolveFn ];
+  function ngSessionRunFn($route) {
+    for (var path in $route.routes) {
+      var route = $route.routes[path];
+      if (!ng.isObject(route.resolve)) {
+        route.resolve = {};
+      }
+      route.resolve.ngSession = sessionResolveDef;
+    }
   }
   function configure(cfg) {
     if (ng.isString(cfg.updateUrl)) {
@@ -111,5 +131,5 @@
   function ngSessionProviderFn() {
     return ngSessionProviderDef;
   }
-  ng.module("ngSession", []).provider("ngSession", ngSessionProviderFn).run([ "ngSession", ngSessionRunFn ]);
+  ng.module("ngSession", []).provider("ngSession", ngSessionProviderFn).run([ "$route", ngSessionRunFn ]);
 })(window);

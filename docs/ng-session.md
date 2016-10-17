@@ -61,6 +61,32 @@ ngSession.signOut($scope.data)
 ```
 
 
+### ngSession.reload(options, deferred) 
+
+Reloads the session user object.
+
+It will perform a PUT to the `config.updateUrl` path and then a
+consecuent session `update`.
+
+The server should handle the OUt request as a reload request and fetch
+updated session data.
+
+**Parameters**
+
+**options**: `Object`, Optional AngularJS HTTP request options.
+
+**deferred**: `Promise`, Optional deferred promise object.
+
+**Returns**: `Promise`, A promise resolving the request's `res` object.
+
+**Example**:
+```js
+ngSession.reload($scope.data)
+  .then(function (res) {})
+  .catch(function (res) {})
+```
+
+
 ### ngSession.update(options, deferred) 
 
 Updates the session user object.
@@ -78,7 +104,7 @@ session's user object on success with the request's `res.data`.
 
 **Example**:
 ```js
-ngSession.update($scope.data)
+ngSession.update()
   .then(function (res) {})
   .catch(function (res) {})
 ```

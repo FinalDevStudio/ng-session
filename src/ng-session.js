@@ -119,6 +119,38 @@
     }
 
     /**
+     * Reloads the session user object.
+     *
+     * It will perform a PUT to the `config.updateUrl` path and then a
+     * consecuent session `update`.
+     *
+     * The server should handle the OUt request as a reload request and fetch
+     * updated session data.
+     *
+     * @param {Object} options Optional AngularJS HTTP request options.
+     * @param {Promise} deferred Optional deferred promise object.
+     *
+     * @returns {Promise} A promise resolving the request's `res` object.
+     *
+     * @example
+     * ngSession.reload($scope.data)
+     *   .then(function (res) {})
+     *   .catch(function (res) {})
+     */
+    function reload(data, options, deferred) {
+      if (!deferred) {
+        deferred = $q.defer();
+      }
+
+      /* Reloads current session */
+      $http.put(config.updateUrl, data, options || {})
+        .then(update.bind(null, options, deferred))
+        .catch(deferred.reject);
+
+      return deferred.promise;
+    }
+
+    /**
      * Updates the session user object.
      *
      * It will perform a GET to the `config.updateUrl` path and set the
@@ -130,7 +162,7 @@
      * @returns {Promise} A promise resolving the request's `res` object.
      *
      * @example
-     * ngSession.update($scope.data)
+     * ngSession.update()
      *   .then(function (res) {})
      *   .catch(function (res) {})
      */
@@ -258,6 +290,7 @@
       hasRole: hasRole,
       signOut: signOut,
       signIn: signIn,
+      reload: reload,
       update: update,
       user: user,
       get: get,
@@ -268,13 +301,33 @@
     return ngSessionServiceDef;
   }
 
+  function sessionResolveFn($session) {
+    return $session.update({
+      cache: true
+    });
+  }
+
+  var sessionResolveDef = [
+    'ngSession',
+
+    sessionResolveFn
+  ];
+
   /**
    * ngSession run function.
    *
    * @private
    */
-  function ngSessionRunFn($session) {
-    $session.update();
+  function ngSessionRunFn($route) {
+    for (var path in $route.routes) {
+      var route = $route.routes[path];
+
+      if (!ng.isObject(route.resolve)) {
+        route.resolve = {};
+      }
+
+      route.resolve.ngSession = sessionResolveDef;
+    }
   }
 
   /**
@@ -343,7 +396,7 @@
 
   /* Define AngularJS module run function */
   .run([
-    'ngSession',
+    '$route',
 
     ngSessionRunFn
   ]);

@@ -110,7 +110,7 @@
       if (!ng.isObject(route.resolve)) {
         route.resolve = {};
       }
-      route.resolve.ngSession = sessionResolveDef;
+      route.resolve.__ngsession = sessionResolveDef;
     }
   }
   function configure(cfg) {

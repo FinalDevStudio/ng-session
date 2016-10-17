@@ -5,23 +5,33 @@ describe('The ngSession service', function () {
   var $httpBackend, $session, sess;
 
   beforeEach(module('ngSession'));
+  beforeEach(module('ngRoute'));
 
   describe('Sign in proccess', function () {
     beforeEach(inject(function ($injector) {
       $httpBackend = $injector.get('$httpBackend');
       $session = $injector.get('ngSession');
 
+      var user = {
+        id: 1,
+        name: 'John Tester',
+        roles: 'user',
+        updates: 0
+      };
+
       $httpBackend.whenGET('/api/session')
         .respond(function () {
           if (sess) {
-            return [200, {
-              id: 1,
-              name: 'John Tester',
-              roles: 'user'
-            }];
+            return [200, user];
           }
 
           return [401];
+        });
+
+      $httpBackend.whenPUT('/api/session')
+        .respond(function () {
+          user.updates++;
+          return [204];
         });
 
       $httpBackend.whenPOST('/api/users/sign-in')
@@ -52,10 +62,9 @@ describe('The ngSession service', function () {
 
     it('Should actually load', function () {
       expect($session).to.be.an('object');
-      $httpBackend.flush();
     });
 
-    it('Should update the session', function (done) {
+    it('Should update the inactive session', function (done) {
       $session.update()
 
       .then(() => {
@@ -116,6 +125,46 @@ describe('The ngSession service', function () {
 
       .catch((res) => {
         done(new Error('User should be signed in! (Got ' + res.status + ')\n'));
+      });
+
+      $httpBackend.flush();
+    });
+
+    it('Should update the active session', function (done) {
+      $session.update()
+
+      .then((res) => {
+        expect(res).to.be.an('object');
+        expect(res.status).to.equal(200);
+        expect(res.data).to.not.be.empty;
+        expect($session.user()).to.not.be.empty;
+
+        done();
+      })
+
+      .catch(() => {
+        done(new Error('Success callback shouldn\'t be called!'));
+      });
+
+      $httpBackend.flush();
+    });
+
+    it('Should reload the session', function (done) {
+      $session.reload()
+
+      .then((res) => {
+        expect(res).to.be.an('object');
+        expect(res.status).to.equal(200);
+        expect($session.user()).to.not.be.empty;
+        expect($session.user('id')).to.be.a('number');
+        expect($session.user('name')).to.be.a('string');
+        expect($session.user('updates')).to.equal(1);
+
+        done();
+      })
+
+      .catch((res) => {
+        done(new Error('Something failed! (Got ' + res.status + ')\n'));
       });
 
       $httpBackend.flush();

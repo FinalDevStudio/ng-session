@@ -70,7 +70,7 @@
      * `update` if successful.
      *
      * @param {Object} data The data to send for sign in.
-     * @param {Object} options Optional AngularJS HTTP request options.
+     * @param {Object} config Optional AngularJS HTTP request configuration.
      *
      * @returns {Promise} A promise resolving the request's `res` object.
      *
@@ -79,13 +79,13 @@
      *   .then(function (res) {})
      *   .catch(function (res) {})
      */
-    function signIn(data, options) {
+    function signIn(data, config) {
       var deferred = $q.defer();
 
       /* Remove previous user object */
       $rootScope.session.user = null;
 
-      $http.post(config.signInUrl, data, options)
+      $http.post(config.signInUrl, data, config)
         .then(onSingInSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -99,7 +99,7 @@
      * user object on success.
      *
      * @param {Object} data The optional data to send for sign out.
-     * @param {Object} options Optional AngularJS HTTP request options.
+     * @param {Object} config Optional AngularJS HTTP request configuration.
      *
      * @returns {Promise} A promise resolving the request's `res` object.
      *
@@ -108,10 +108,10 @@
      *   .then(function (res) {})
      *   .catch(function (res) {})
      */
-    function signOut(data, options) {
+    function signOut(data, config) {
       var deferred = $q.defer();
 
-      $http.post(config.signOutUrl, data, options)
+      $http.post(config.signOutUrl, data, config)
         .then(onSingOutSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -127,7 +127,8 @@
      * The server should handle the OUt request as a reload request and fetch
      * updated session data.
      *
-     * @param {Object} options Optional AngularJS HTTP request options.
+     * @param {Object} data The optional data to send for the reload.
+     * @param {Object} config Optional AngularJS HTTP request configuration.
      * @param {Promise} deferred Optional deferred promise object.
      *
      * @returns {Promise} A promise resolving the request's `res` object.
@@ -137,14 +138,14 @@
      *   .then(function (res) {})
      *   .catch(function (res) {})
      */
-    function reload(data, options, deferred) {
+    function reload(data, config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
       }
 
       /* Reloads current session */
-      $http.put(config.updateUrl, data, options || {})
-        .then(update.bind(null, options, deferred))
+      $http.put(config.updateUrl, data, config)
+        .then(update.bind(null, config, deferred))
         .catch(deferred.reject);
 
       return deferred.promise;
@@ -156,7 +157,7 @@
      * It will perform a GET to the `config.updateUrl` path and set the
      * session's user object on success with the request's `res.data`.
      *
-     * @param {Object} options Optional AngularJS HTTP request options.
+     * @param {Object} config Optional AngularJS HTTP request configuration.
      * @param {Promise} deferred Optional deferred promise object.
      *
      * @returns {Promise} A promise resolving the request's `res` object.
@@ -166,13 +167,13 @@
      *   .then(function (res) {})
      *   .catch(function (res) {})
      */
-    function update(options, deferred) {
+    function update(config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
       }
 
       /* Retrieve current session */
-      $http.get(config.updateUrl, options || {})
+      $http.get(config.updateUrl, config)
         .then(onSessionUpdateSuccess.bind(null, deferred))
         .catch(deferred.reject);
 

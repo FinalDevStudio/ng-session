@@ -13,7 +13,7 @@
   var ng = window.angular;
 
   /* Default configuration */
-  var config = {
+  var CONFIG = {
     signOutUrl: '/api/users/sign-out',
     signInUrl: '/api/users/sign-in',
     updateUrl: '/api/session'
@@ -85,7 +85,7 @@
       /* Remove previous user object */
       $rootScope.session.user = null;
 
-      $http.post(config.signInUrl, data, config)
+      $http.post(CONFIG.signInUrl, data, config)
         .then(onSingInSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -111,7 +111,7 @@
     function signOut(data, config) {
       var deferred = $q.defer();
 
-      $http.post(config.signOutUrl, data, config)
+      $http.post(CONFIG.signOutUrl, data, config)
         .then(onSingOutSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -144,7 +144,7 @@
       }
 
       /* Reloads current session */
-      $http.put(config.updateUrl, data, config)
+      $http.put(CONFIG.updateUrl, data, config)
         .then(update.bind(null, config, deferred))
         .catch(deferred.reject);
 
@@ -173,7 +173,7 @@
       }
 
       /* Retrieve current session */
-      $http.get(config.updateUrl, config)
+      $http.get(CONFIG.updateUrl, config)
         .then(onSessionUpdateSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -207,8 +207,7 @@
     /**
      * Checks if the current user has any or all of the provided roles.
      *
-     * @param {(String|String[])} roles The required roles. Can be a single
-     *   string or a string array.
+     * @param {(String|String[])} roles The required roles.
      * @param {Boolean} all If all the provided roles are required.
      *
      * @return {Boolean}
@@ -302,12 +301,24 @@
     return ngSessionServiceDef;
   }
 
+  var resolved = false;
+
+  /**
+   * Session resolve callback function.
+   *
+   * @private
+   */
   function sessionResolveFn($session) {
-    return $session.update({
-      cache: true
-    });
+    if (resolved) {
+      return resolved;
+    }
+
+    resolved = true;
+
+    return $session.update();
   }
 
+  /* Session resolve definition */
   var sessionResolveDef = [
     'ngSession',
 
@@ -327,7 +338,7 @@
         route.resolve = {};
       }
 
-      route.resolve.__ngsession = sessionResolveDef;
+      route.resolve._session = sessionResolveDef;
     }
   }
 
@@ -348,20 +359,20 @@
    *   updateUrl: '/api/session'
    * });
    */
-  function configure(cfg) {
+  function configure(config) {
     /* Sets session update GET URL */
-    if (ng.isString(cfg.updateUrl)) {
-      config.updateUrl = cfg.updateUrl;
+    if (ng.isString(config.updateUrl)) {
+      CONFIG.updateUrl = config.updateUrl;
     }
 
     /* Sets sign in POST URL */
-    if (ng.isString(cfg.signInUrl)) {
-      config.signInUrl = cfg.signInUrl;
+    if (ng.isString(config.signInUrl)) {
+      CONFIG.signInUrl = config.signInUrl;
     }
 
     /* Sets sign out POST URL */
-    if (ng.isString(cfg.signOutUrl)) {
-      config.signOutUrl = cfg.signOutUrl;
+    if (ng.isString(config.signOutUrl)) {
+      CONFIG.signOutUrl = config.signOutUrl;
     }
   }
 

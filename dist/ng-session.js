@@ -1,7 +1,7 @@
 (function(window) {
   "use strict";
   var ng = window.angular;
-  var config = {
+  var CONFIG = {
     signOutUrl: "/api/users/sign-out",
     signInUrl: "/api/users/sign-in",
     updateUrl: "/api/session"
@@ -19,29 +19,29 @@
       $rootScope.session.user = null;
       deferred.resolve(res);
     }
-    function signIn(data, options) {
+    function signIn(data, config) {
       var deferred = $q.defer();
       $rootScope.session.user = null;
-      $http.post(config.signInUrl, data, options).then(onSingInSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.post(CONFIG.signInUrl, data, config).then(onSingInSuccess.bind(null, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
-    function signOut(data, options) {
+    function signOut(data, config) {
       var deferred = $q.defer();
-      $http.post(config.signOutUrl, data, options).then(onSingOutSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.post(CONFIG.signOutUrl, data, config).then(onSingOutSuccess.bind(null, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
-    function reload(data, options, deferred) {
+    function reload(data, config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
       }
-      $http.put(config.updateUrl, data, options || {}).then(update.bind(null, options, deferred)).catch(deferred.reject);
+      $http.put(CONFIG.updateUrl, data, config).then(update.bind(null, config, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
-    function update(options, deferred) {
+    function update(config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
       }
-      $http.get(config.updateUrl, options || {}).then(onSessionUpdateSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.get(CONFIG.updateUrl, config).then(onSessionUpdateSuccess.bind(null, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
     function user(prop) {
@@ -98,10 +98,13 @@
     };
     return ngSessionServiceDef;
   }
+  var resolved = false;
   function sessionResolveFn($session) {
-    return $session.update({
-      cache: true
-    });
+    if (resolved) {
+      return resolved;
+    }
+    resolved = true;
+    return $session.update();
   }
   var sessionResolveDef = [ "ngSession", sessionResolveFn ];
   function ngSessionRunFn($route) {
@@ -110,18 +113,18 @@
       if (!ng.isObject(route.resolve)) {
         route.resolve = {};
       }
-      route.resolve.__ngsession = sessionResolveDef;
+      route.resolve._session = sessionResolveDef;
     }
   }
-  function configure(cfg) {
-    if (ng.isString(cfg.updateUrl)) {
-      config.updateUrl = cfg.updateUrl;
+  function configure(config) {
+    if (ng.isString(config.updateUrl)) {
+      CONFIG.updateUrl = config.updateUrl;
     }
-    if (ng.isString(cfg.signInUrl)) {
-      config.signInUrl = cfg.signInUrl;
+    if (ng.isString(config.signInUrl)) {
+      CONFIG.signInUrl = config.signInUrl;
     }
-    if (ng.isString(cfg.signOutUrl)) {
-      config.signOutUrl = cfg.signOutUrl;
+    if (ng.isString(config.signOutUrl)) {
+      CONFIG.signOutUrl = config.signOutUrl;
     }
   }
   var ngSessionProviderDef = {

@@ -1,7 +1,7 @@
 {
   "title": "Angular Flash Messages",
   "name": "ng-session",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "homepage": "https://github.com/FinalDevStudio/ng-session",
   "description": "Flash messages module for AngularJS",
   "authors": [

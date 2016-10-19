@@ -15,7 +15,7 @@ ngSession Service
 
 * * *
 
-### ngSession.signIn(data, options) 
+### ngSession.signIn(data, config) 
 
 Signs a user in.
 
@@ -26,7 +26,7 @@ It will perform a `POST` to the `config.signOutUrl` path and perform an
 
 **data**: `Object`, The data to send for sign in.
 
-**options**: `Object`, Optional AngularJS HTTP request options.
+**config**: `Object`, Optional AngularJS HTTP request configuration.
 
 **Returns**: `Promise`, A promise resolving the request's `res` object.
 
@@ -38,7 +38,7 @@ ngSession.signIn($scope.data)
 ```
 
 
-### ngSession.signOut(data, options) 
+### ngSession.signOut(data, config) 
 
 Signs a user out.
 
@@ -49,7 +49,7 @@ user object on success.
 
 **data**: `Object`, The optional data to send for sign out.
 
-**options**: `Object`, Optional AngularJS HTTP request options.
+**config**: `Object`, Optional AngularJS HTTP request configuration.
 
 **Returns**: `Promise`, A promise resolving the request's `res` object.
 
@@ -61,7 +61,7 @@ ngSession.signOut($scope.data)
 ```
 
 
-### ngSession.reload(options, deferred) 
+### ngSession.reload(data, config, deferred) 
 
 Reloads the session user object.
 
@@ -73,7 +73,9 @@ updated session data.
 
 **Parameters**
 
-**options**: `Object`, Optional AngularJS HTTP request options.
+**data**: `Object`, The optional data to send for the reload.
+
+**config**: `Object`, Optional AngularJS HTTP request configuration.
 
 **deferred**: `Promise`, Optional deferred promise object.
 
@@ -87,7 +89,7 @@ ngSession.reload($scope.data)
 ```
 
 
-### ngSession.update(options, deferred) 
+### ngSession.update(config, deferred) 
 
 Updates the session user object.
 
@@ -96,7 +98,7 @@ session's user object on success with the request's `res.data`.
 
 **Parameters**
 
-**options**: `Object`, Optional AngularJS HTTP request options.
+**config**: `Object`, Optional AngularJS HTTP request configuration.
 
 **deferred**: `Promise`, Optional deferred promise object.
 
@@ -133,8 +135,7 @@ Checks if the current user has any or all of the provided roles.
 
 **Parameters**
 
-**roles**: `String | Array.&lt;String&gt;`, The required roles. Can be a single
-  string or a string array.
+**roles**: `String | Array.&lt;String&gt;`, The required roles.
 
 **all**: `Boolean`, If all the provided roles are required.
 

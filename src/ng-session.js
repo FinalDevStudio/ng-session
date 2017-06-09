@@ -213,10 +213,10 @@
      * @return {Boolean}
      *
      * @example
-     * ngSession.hasRoles('ROLE.ADMIN'); // => false
-     * ngSession.hasRoles('ROLE.USER'); // => true
-     * ngSession.hasRoles(['ROLE.ADMIN', 'ROLE.USER']); // => true
-     * ngSession.hasRoles(['ROLE.ADMIN', 'ROLE.USER'], true); // => false
+     * ngSession.hasRole('ROLE.ADMIN'); // => false
+     * ngSession.hasRole('ROLE.USER'); // => true
+     * ngSession.hasRole(['ROLE.ADMIN', 'ROLE.USER']); // => true
+     * ngSession.hasRole(['ROLE.ADMIN', 'ROLE.USER'], true); // => false
      */
     function hasRole(roles, all) {
       var actual = user('roles');

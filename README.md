@@ -56,10 +56,10 @@ The `ngSession` service exposes various methods:
 
 Method    | Arguments                          | Description
 --------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-`reload`  | `config`:`Object`                  | Reloads the session via PUT request. The config object is optional and must be a valid AngularJS HTTP config object.
-`update`  | `config`:`Object`                  | Updates the session via GET request. The config object is optional and must be a valid AngularJS HTTP config object.
-`signIn`  | `data`:`Object`, `config`:`Object` | Signs a user in via POST request and updates the session with the user's data. Argument `data` must contain the POST data to send to the server. The config object is optional and must be a valid AngularJS HTTP config object.
-`signOut` | `data`:`Object`, `config`:`Object` | Signs a user out vis POST request. The `data` object can be used to send POST data. The config object is optional and must be a valid AngularJS HTTP config object.
+`reload`  | `config`:`Object`                  | Reloads the session via PUT request to the update url. The config object is optional and must be a valid AngularJS HTTP config object.
+`update`  | `config`:`Object`                  | Updates the session via GET request to the update url. The config object is optional and must be a valid AngularJS HTTP config object.
+`signIn`  | `data`:`Object`, `config`:`Object` | Signs a user in via POST request to the sign in url and updates the session with the user's data. The `data` object must contain the POST data to send to the server in order to sign the user in. The config object is optional and must be a valid AngularJS HTTP config object.
+`signOut` | `data`:`Object`, `config`:`Object` | Signs a user out via POST request to the sign out url. The `data` object can be used to send POST data. The config object is optional and must be a valid AngularJS HTTP config object.
 `user`    | `prop`:`String`                    | Retrieves a property from the `session.user` object if any. If no argument is passed it will return the whole object.
 `hasRole` | `prop`:`String \| String[]`        | Checks if the current user has any or all of the provided roles.
 `set`     | `prop`:`String`, `value`:`Mixed`   | Sets a value into the session object. Argument `prop` must be a property name to assign the value to. Argument `value` must be the value to assign.

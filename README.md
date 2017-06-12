@@ -54,16 +54,17 @@ angular.module('MyApp').config([
 
 The `ngSession` service exposes various methods:
 
-Method    | Arguments                           | Description
---------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-`update`  | `options`:`Object`                  | Updates the session. The options object is optional and must be a valid AngularJS HTTP options object.
-`signIn`  | `data`:`Object`, `options`:`Object` | Signs a user in and updates the session with the user's data. Argument `data` must contain the POST data to send to the server. Argument `options` can be a valid AngularJS HTTP options object.
-`signOut` | `data`:`Object`, `options`:`Object` | Signs a user out. Argument `data` can be a POST data object. Argument `options` can be a valid AngularJS HTTP options object.
-`user`    | `prop`:`String`                     | Retrieves a property from the `session.user` object if any. If no argument is passed it will return the whole object.
-`hasRole` | `prop`:`String \| String[]` | Checks if the current user has any or all of the provided roles.
-`set`     | `prop`:`String`, `value`:`Mixed`    | Sets a value into the session object. Argument `prop` must be a property name to assign the value to. Argument `value` must be the value to assign.
-`get`     | `prop`:`String`                     | Obtains a value from the session object. Argument `prop` must be the property name to retrieve the value from.
-`del`     | `prop`:`String`                     | Deletes a property from the session object. Argument `prop` must be the property name to delete.
+Method    | Arguments                          | Description
+--------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+`reload`  | `config`:`Object`                  | Reloads the session via PUT request. The config object is optional and must be a valid AngularJS HTTP config object.
+`update`  | `config`:`Object`                  | Updates the session via GET request. The config object is optional and must be a valid AngularJS HTTP config object.
+`signIn`  | `data`:`Object`, `config`:`Object` | Signs a user in via POST request and updates the session with the user's data. Argument `data` must contain the POST data to send to the server. The config object is optional and must be a valid AngularJS HTTP config object.
+`signOut` | `data`:`Object`, `config`:`Object` | Signs a user out vis POST request. The `data` object can be used to send POST data. The config object is optional and must be a valid AngularJS HTTP config object.
+`user`    | `prop`:`String`                    | Retrieves a property from the `session.user` object if any. If no argument is passed it will return the whole object.
+`hasRole` | `prop`:`String \| String[]`        | Checks if the current user has any or all of the provided roles.
+`set`     | `prop`:`String`, `value`:`Mixed`   | Sets a value into the session object. Argument `prop` must be a property name to assign the value to. Argument `value` must be the value to assign.
+`get`     | `prop`:`String`                    | Obtains a value from the session object. Argument `prop` must be the property name to retrieve the value from.
+`del`     | `prop`:`String`                    | Deletes a property from the session object. Argument `prop` must be the property name to delete.
 
 #### Example usage
 

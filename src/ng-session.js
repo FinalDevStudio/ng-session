@@ -315,14 +315,14 @@
    *
    * @private
    */
-  function sessionResolveFn($session) {
-    if (updatedAt) {
-      if (ng.isBoolean(defaults.cache) || defaults.cache) {
-        return null;
+  function sessionResolveFn($session, $q) {
+    if (ng.isDate(updatedAt)) {
+      if (typeof cfg.cache == 'boolean' && defaults.cache) {
+        return $q.resolve();
       }
 
-      if (ng.isNumber(defaults.cache) || updatedAt.valueOf() + defaults.cache < Date.now()) {
-        return null;
+      if (ng.isNumber(defaults.cache) && updatedAt.valueOf() + defaults.cache < Date.now()) {
+        return $q.resolve();
       }
     }
 
@@ -330,7 +330,7 @@
   }
 
   /* Session resolve definition */
-  var sessionResolveDef = ['ngSession', sessionResolveFn];
+  var sessionResolveDef = ['ngSession', '$q', sessionResolveFn];
 
   /**
    * ngSession run function.
@@ -389,7 +389,7 @@
     }
 
     /* Sets the cache behavior */
-    if (ng.isNumber(cfg.cache) || ng.isBoolean(cfg.cache)) {
+    if (ng.isNumber(cfg.cache) || typeof cfg.cache == 'boolean') {
       defaults.cache = cfg.cache;
     }
   }

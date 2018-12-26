@@ -1,9 +1,9 @@
 {
-  "title": "Angular Flash Messages",
+  "title": "Angular Session Handler",
   "name": "ng-session",
   "version": "1.3.3",
   "homepage": "https://github.com/FinalDevStudio/ng-session",
-  "description": "Flash messages module for AngularJS",
+  "description": "Session handler module for AngularJS",
   "authors": [
     "Santiago G. Marín <santiago@finaldevstudio.com>"
   ],

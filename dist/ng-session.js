@@ -1,15 +1,18 @@
 (function(window) {
   "use strict";
   var ng = window.angular;
-  var CONFIG = {
+  var defaults = {
     signOutUrl: "/api/users/sign-out",
     signInUrl: "/api/users/sign-in",
-    updateUrl: "/api/session"
+    updateUrl: "/api/session",
+    cache: false
   };
+  var updatedAt;
   function ngSessionServiceFn($rootScope, $http, $q) {
     $rootScope.session = {};
     function onSessionUpdateSuccess(deferred, res) {
       $rootScope.session.user = res.data;
+      updatedAt = new Date();
       deferred.resolve(res);
     }
     function onSingInSuccess(deferred) {
@@ -22,26 +25,26 @@
     function signIn(data, config) {
       var deferred = $q.defer();
       $rootScope.session.user = null;
-      $http.post(CONFIG.signInUrl, data, config).then(onSingInSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.post(defaults.signInUrl, data, config).then(onSingInSuccess.bind(null, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
     function signOut(data, config) {
       var deferred = $q.defer();
-      $http.post(CONFIG.signOutUrl, data, config).then(onSingOutSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.post(defaults.signOutUrl, data, config).then(onSingOutSuccess.bind(null, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
     function reload(data, config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
       }
-      $http.put(CONFIG.updateUrl, data, config).then(update.bind(null, config, deferred)).catch(deferred.reject);
+      $http.put(defaults.updateUrl, data, config).then(update.bind(null, config, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
     function update(config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
       }
-      $http.get(CONFIG.updateUrl, config).then(onSessionUpdateSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.get(defaults.updateUrl, config).then(onSessionUpdateSuccess.bind(null, deferred)).catch(deferred.reject);
       return deferred.promise;
     }
     function user(prop) {
@@ -98,12 +101,15 @@
     };
     return ngSessionServiceDef;
   }
-  var resolved = false;
   function sessionResolveFn($session) {
-    if (resolved) {
-      return resolved;
+    if (updatedAt) {
+      if (ng.isBoolean(defaults.cache) || defaults.cache) {
+        return null;
+      }
+      if (ng.isNumber(defaults.cache) || updatedAt.valueOf() + defaults.cache < Date.now()) {
+        return null;
+      }
     }
-    resolved = true;
     return $session.update();
   }
   var sessionResolveDef = [ "ngSession", sessionResolveFn ];
@@ -116,15 +122,18 @@
       route.resolve._session = sessionResolveDef;
     }
   }
-  function configure(config) {
-    if (ng.isString(config.updateUrl)) {
-      CONFIG.updateUrl = config.updateUrl;
+  function configure(cfg) {
+    if (ng.isString(cfg.updateUrl)) {
+      defaults.updateUrl = cfg.updateUrl;
     }
-    if (ng.isString(config.signInUrl)) {
-      CONFIG.signInUrl = config.signInUrl;
+    if (ng.isString(cfg.signInUrl)) {
+      defaults.signInUrl = cfg.signInUrl;
     }
-    if (ng.isString(config.signOutUrl)) {
-      CONFIG.signOutUrl = config.signOutUrl;
+    if (ng.isString(cfg.signOutUrl)) {
+      defaults.signOutUrl = cfg.signOutUrl;
+    }
+    if (ng.isNumber(cfg.cache) || ng.isBoolean(cfg.cache)) {
+      defaults.cache = cfg.cache;
     }
   }
   var ngSessionProviderDef = {

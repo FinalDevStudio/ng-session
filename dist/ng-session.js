@@ -101,18 +101,18 @@
     };
     return ngSessionServiceDef;
   }
-  function sessionResolveFn($session) {
-    if (updatedAt) {
-      if (ng.isBoolean(defaults.cache) || defaults.cache) {
-        return null;
+  function sessionResolveFn($session, $q) {
+    if (ng.isDate(updatedAt)) {
+      if (typeof cfg.cache == "boolean" && defaults.cache) {
+        return $q.resolve();
       }
-      if (ng.isNumber(defaults.cache) || updatedAt.valueOf() + defaults.cache < Date.now()) {
-        return null;
+      if (ng.isNumber(defaults.cache) && updatedAt.valueOf() + defaults.cache < Date.now()) {
+        return $q.resolve();
       }
     }
     return $session.update();
   }
-  var sessionResolveDef = [ "ngSession", sessionResolveFn ];
+  var sessionResolveDef = [ "ngSession", "$q", sessionResolveFn ];
   function ngSessionRunFn($route) {
     for (var path in $route.routes) {
       var route = $route.routes[path];
@@ -132,7 +132,7 @@
     if (ng.isString(cfg.signOutUrl)) {
       defaults.signOutUrl = cfg.signOutUrl;
     }
-    if (ng.isNumber(cfg.cache) || ng.isBoolean(cfg.cache)) {
+    if (ng.isNumber(cfg.cache) || typeof cfg.cache == "boolean") {
       defaults.cache = cfg.cache;
     }
   }

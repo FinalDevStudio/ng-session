@@ -13,7 +13,7 @@
   var ng = window.angular;
 
   /* Default configuration */
-  var config = {
+  var defaults = {
     signOutUrl: '/api/users/sign-out',
     signInUrl: '/api/users/sign-in',
     updateUrl: '/api/session',
@@ -71,7 +71,7 @@
     /**
      * Signs a user in.
      *
-     * It will perform a `POST` to the `config.signOutUrl` path and perform an
+     * It will perform a `POST` to the `defaults.signOutUrl` path and perform an
      * `update` if successful.
      *
      * @param {Object} data The data to send for sign in.
@@ -91,7 +91,7 @@
       $rootScope.session.user = null;
 
       $http
-        .post(config.signInUrl, data, config)
+        .post(defaults.signInUrl, data, config)
         .then(onSingInSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -101,7 +101,7 @@
     /**
      * Signs a user out.
      *
-     * It will perform a POST to the `config.signOutUrl` path and delete the
+     * It will perform a POST to the `defaults.signOutUrl` path and delete the
      * user object on success.
      *
      * @param {Object} data The optional data to send for sign out.
@@ -118,7 +118,7 @@
       var deferred = $q.defer();
 
       $http
-        .post(config.signOutUrl, data, config)
+        .post(defaults.signOutUrl, data, config)
         .then(onSingOutSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -128,7 +128,7 @@
     /**
      * Reloads the session user object.
      *
-     * It will perform a PUT to the `config.updateUrl` path and then a
+     * It will perform a PUT to the `defaults.updateUrl` path and then a
      * consecuent session `update`.
      *
      * The server should handle the OUt request as a reload request and fetch
@@ -152,7 +152,7 @@
 
       /* Reloads current session */
       $http
-        .put(config.updateUrl, data, config)
+        .put(defaults.updateUrl, data, config)
         .then(update.bind(null, config, deferred))
         .catch(deferred.reject);
 
@@ -162,7 +162,7 @@
     /**
      * Updates the session user object.
      *
-     * It will perform a GET to the `config.updateUrl` path and set the
+     * It will perform a GET to the `defaults.updateUrl` path and set the
      * session's user object on success with the request's `res.data`.
      *
      * @param {Object} config Optional AngularJS HTTP request configuration.
@@ -182,7 +182,7 @@
 
       /* Retrieve current session */
       $http
-        .get(config.updateUrl, config)
+        .get(defaults.updateUrl, config)
         .then(onSessionUpdateSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -317,11 +317,11 @@
    */
   function sessionResolveFn($session) {
     if (updatedAt) {
-      if (ng.isBoolean(config.cache) || config.cache) {
+      if (ng.isBoolean(defaults.cache) || defaults.cache) {
         return null;
       }
 
-      if (ng.isNumber(config.cache) || updatedAt.valueOf() + config.cache < Date.now()) {
+      if (ng.isNumber(defaults.cache) || updatedAt.valueOf() + defaults.cache < Date.now()) {
         return null;
       }
     }
@@ -375,22 +375,22 @@
   function configure(cfg) {
     /* Sets session update GET URL */
     if (ng.isString(cfg.updateUrl)) {
-      config.updateUrl = cfg.updateUrl;
+      defaults.updateUrl = cfg.updateUrl;
     }
 
     /* Sets sign in POST URL */
     if (ng.isString(cfg.signInUrl)) {
-      config.signInUrl = cfg.signInUrl;
+      defaults.signInUrl = cfg.signInUrl;
     }
 
     /* Sets sign out POST URL */
     if (ng.isString(cfg.signOutUrl)) {
-      config.signOutUrl = cfg.signOutUrl;
+      defaults.signOutUrl = cfg.signOutUrl;
     }
 
     /* Sets the cache behavior */
     if (ng.isNumber(cfg.cache) || ng.isBoolean(cfg.cache)) {
-      config.cache = cfg.cache;
+      defaults.cache = cfg.cache;
     }
   }
 

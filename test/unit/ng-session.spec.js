@@ -1,16 +1,52 @@
 'use strict';
 
+angular.module('app', []);
+
 /* Test the directive */
 describe('The ngSession service', function() {
-  var $httpBackend, $session, sess;
+  var $httpBackend, $session, $sessionProvider, sess;
 
   beforeEach(module('ngSession'));
   beforeEach(module('ngRoute'));
+
+  beforeEach(function() {
+    angular.module('app.config', ['ngSession', 'ngRoute']).config([
+      'ngSessionProvider',
+      function(ngSessionProvider) {
+        console.dir(ngSessionProvider);
+        $sessionProvider = ngSessionProvider;
+      }
+    ]);
+
+    module('app', 'app.config');
+
+    inject(function() {});
+  });
+
+  describe('Provider', function() {
+    it('should be an object', () => {
+      expect($sessionProvider).to.be.an('object');
+    });
+
+    it('configure should be a function', () => {
+      expect($sessionProvider.configure).to.be.a('function');
+    });
+
+    it('configure to be successful', () => {
+      var options = {
+        cache: true
+      };
+
+      expect($sessionProvider.configure(options)).to.not.throw;
+    });
+  });
 
   describe('Sign in proccess', function() {
     beforeEach(inject(function($injector) {
       $httpBackend = $injector.get('$httpBackend');
       $session = $injector.get('ngSession');
+
+      console.dir($sessionProvider);
 
       var user = {
         id: 1,

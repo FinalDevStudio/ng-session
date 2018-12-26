@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <base href="/" />
+  </head>
+
+  <body>
+    <a ng-href="/">Home</a> <a ng-href="/about">About</a> <a ng-href="/help">Help</a>
+
+    <main ng-view></main>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular.js"
+      integrity="sha256-RflTGBQTyWuRHcjjgRTBrkLLntUWrNMmqMBV6vB7+Lw="
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-route.js"
+      integrity="sha256-d3uWjY250RRsuQ+bM9OAhrkkUbASe8NBN/gR23awrg4="
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="/ng-session.js"></script>
+
+    <script>
+      angular.module('app', ['ngSession', 'ngRoute']).config([
+        'ngSessionProvider',
+        '$routeProvider',
+        '$locationProvider',
+
+        function(ngSessionProvider, $routeProvider, $locationProvider) {
+          $locationProvider.html5Mode(true);
+
+          ngSessionProvider.configure({
+            signInUrl: '/sign-in',
+            signOutUrl: '/sign-out',
+            updateUrl: '/session',
+            cache: 1000 * 5 // 5 seconds
+          });
+
+          $routeProvider.when('/', {
+            template: '<p>Hello!</p>'
+          });
+
+          $routeProvider.when('/about', {
+            template: '<p>About!</p>'
+          });
+
+          $routeProvider.when('/help', {
+            template: '<p>Help!</p>'
+          });
+
+          $routeProvider.otherwise('/');
+        }
+      ]);
+    </script>
+  </body>
+</html>

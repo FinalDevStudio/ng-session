@@ -13,7 +13,6 @@ describe('The ngSession service', function() {
     angular.module('app.config', ['ngSession', 'ngRoute']).config([
       'ngSessionProvider',
       function(ngSessionProvider) {
-        console.dir(ngSessionProvider);
         $sessionProvider = ngSessionProvider;
       }
     ]);
@@ -41,7 +40,7 @@ describe('The ngSession service', function() {
     });
   });
 
-  describe('Sign in proccess', function() {
+  describe('Sign in process', function() {
     beforeEach(inject(function($injector) {
       $httpBackend = $injector.get('$httpBackend');
       $session = $injector.get('ngSession');

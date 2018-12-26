@@ -120,6 +120,23 @@
     }
 
     /**
+     * Resolves the Session using cache if available.
+     */
+    function resolve() {
+      if (ng.isDate(updatedAt)) {
+        if (typeof defaults.cache == 'boolean' && defaults.cache) {
+          return $q.resolve();
+        }
+
+        if (ng.isNumber(defaults.cache) && updatedAt.valueOf() + defaults.cache > Date.now()) {
+          return $q.resolve();
+        }
+      }
+
+      return update();
+    }
+
+    /**
      * Reloads the session user object.
      *
      * It will perform a PUT to the `defaults.updateUrl` path and then a
@@ -286,6 +303,7 @@
     var ngSessionServiceDef = {
       hasRole: hasRole,
       signOut: signOut,
+      resolve: resolve,
       signIn: signIn,
       reload: reload,
       update: update,
@@ -304,25 +322,7 @@
    * @private
    */
   function sessionResolveFn($session) {
-    console.log('Resolving session...');
-
-    if (ng.isDate(updatedAt)) {
-      console.log('Updated at is date...');
-
-      if (typeof defaults.cache == 'boolean' && defaults.cache) {
-        console.log('Cache is boolean and should not update...');
-        return;
-      }
-
-      if (ng.isNumber(defaults.cache) && updatedAt.valueOf() + defaults.cache > Date.now()) {
-        console.log('Cache is number and should not update...');
-        return;
-      }
-    }
-
-    console.log('Updated at is', typeof updatedAt);
-
-    return $session.update();
+    return $session.resolve();
   }
 
   /* Session resolve definition */

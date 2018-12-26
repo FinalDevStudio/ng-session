@@ -19,7 +19,7 @@ ngSession Service
 
 Signs a user in.
 
-It will perform a `POST` to the `config.signOutUrl` path and perform an
+It will perform a `POST` to the `defaults.signOutUrl` path and perform an
 `update` if successful.
 
 **Parameters**
@@ -42,7 +42,7 @@ ngSession.signIn($scope.data)
 
 Signs a user out.
 
-It will perform a POST to the `config.signOutUrl` path and delete the
+It will perform a POST to the `defaults.signOutUrl` path and delete the
 user object on success.
 
 **Parameters**
@@ -65,7 +65,7 @@ ngSession.signOut($scope.data)
 
 Reloads the session user object.
 
-It will perform a PUT to the `config.updateUrl` path and then a
+It will perform a PUT to the `defaults.updateUrl` path and then a
 consecuent session `update`.
 
 The server should handle the OUt request as a reload request and fetch
@@ -93,7 +93,7 @@ ngSession.reload($scope.data)
 
 Updates the session user object.
 
-It will perform a GET to the `config.updateUrl` path and set the
+It will perform a GET to the `defaults.updateUrl` path and set the
 session's user object on success with the request's `res.data`.
 
 **Parameters**
@@ -143,10 +143,10 @@ Checks if the current user has any or all of the provided roles.
 
 **Example**:
 ```js
-ngSession.hasRoles('ROLE.ADMIN'); // => false
-ngSession.hasRoles('ROLE.USER'); // => true
-ngSession.hasRoles(['ROLE.ADMIN', 'ROLE.USER']); // => true
-ngSession.hasRoles(['ROLE.ADMIN', 'ROLE.USER'], true); // => false
+ngSession.hasRole('ROLE.ADMIN'); // => false
+ngSession.hasRole('ROLE.USER'); // => true
+ngSession.hasRole(['ROLE.ADMIN', 'ROLE.USER']); // => true
+ngSession.hasRole(['ROLE.ADMIN', 'ROLE.USER'], true); // => false
 ```
 
 
@@ -208,13 +208,22 @@ ngSession Provider
 
 * * *
 
-### ngSessionProvider.configure(config) 
+### ngSessionProvider.configure(cfg) 
 
 Configuration method.
 
 **Parameters**
 
-**config**: `Object`, The configuration object.
+**cfg**: `Object`, The configuration object.
+
+ - **cfg.updateUrl**: `Object`, The session update URL (GET|PUT).
+
+ - **cfg.signInUrl**: `Object`, The session sign in URL (POST).
+
+ - **cfg.signOutUrl**: `Object`, The session sign out URL (POST).
+
+ - **cfg.cache**: `Number | Boolean`, The session cache behavior. Number is the milliseconds to cache the session for.
+A boolean "true" will cache the session forever.
 
 
 **Example**:
@@ -222,7 +231,8 @@ Configuration method.
 ngSessionProvider.configure({
   signOutUrl: '/api/users/sign-out',
   signInUrl: '/api/users/sign-in',
-  updateUrl: '/api/session'
+  updateUrl: '/api/session',
+  cache: '1h'
 });
 ```
 

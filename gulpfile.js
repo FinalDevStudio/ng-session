@@ -15,20 +15,23 @@ const paths = {
  * Clean the dist folder.
  */
 gulp.task('build:clean', () => {
-  del.sync('dist');
+  return del.sync('dist');
 });
 
 /**
  * Minify and copy to dist folder.
  */
 gulp.task('build:minify', () => {
-  return gulp.src(paths.scripts)
+  return gulp
+    .src(paths.scripts)
     .pipe(sourcemaps.init())
     .pipe(uglify())
     .pipe(sourcemaps.write())
-    .pipe(rename({
-      extname: '.min.js'
-    }))
+    .pipe(
+      rename({
+        extname: '.min.js'
+      })
+    )
     .pipe(gulp.dest('dist/'));
 });
 
@@ -36,16 +39,18 @@ gulp.task('build:minify', () => {
  * Beautify and copy to dist folder.
  */
 gulp.task('build:beautify', () => {
-  return gulp.src(paths.scripts)
-    .pipe(uglify({
-      mangle: false,
-      compress: false,
-      output: {
-        bracketize: true,
-        indent_level: 2,
-        beautify: true
-      }
-    }))
+  return gulp
+    .src(paths.scripts)
+    .pipe(
+      uglify({
+        mangle: false,
+        compress: false,
+        output: {
+          indent_level: 2,
+          beautify: true
+        }
+      })
+    )
     .pipe(gulp.dest('dist/'));
 });
 
@@ -56,7 +61,7 @@ gulp.task('docs:clean', () => {
   return del.sync('docs/**.*');
 });
 
-gulp.task('docs:compile', (done) => {
+gulp.task('docs:compile', done => {
   jsdox.generateForDir('./src', './docs', null, done);
 });
 

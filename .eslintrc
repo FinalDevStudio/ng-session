@@ -1,0 +1,36 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "browser": false,
+    "node": true
+  },
+  "rules": {
+    "no-console": "off",
+    "require-jsdoc": "warn",
+    "linebreak-style": ["error", "unix"],
+    "semi": ["error", "always"],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "valid-jsdoc": [
+      "warn",
+      {
+        "requireReturn": false,
+        "prefer": {
+          "return": "returns"
+        }
+      }
+    ]
+  }
+}

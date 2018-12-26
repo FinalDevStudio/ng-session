@@ -7,17 +7,20 @@
  * @license MIT
  */
 
-(function (window) {
+(function(window) {
   'use strict';
 
   var ng = window.angular;
 
   /* Default configuration */
-  var CONFIG = {
+  var config = {
     signOutUrl: '/api/users/sign-out',
     signInUrl: '/api/users/sign-in',
-    updateUrl: '/api/session'
+    updateUrl: '/api/session',
+    cache: false
   };
+
+  var updatedAt;
 
   /**
    * ngSession service function.
@@ -39,6 +42,8 @@
      */
     function onSessionUpdateSuccess(deferred, res) {
       $rootScope.session.user = res.data;
+
+      updatedAt = new Date();
 
       deferred.resolve(res);
     }
@@ -85,7 +90,8 @@
       /* Remove previous user object */
       $rootScope.session.user = null;
 
-      $http.post(CONFIG.signInUrl, data, config)
+      $http
+        .post(config.signInUrl, data, config)
         .then(onSingInSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -111,7 +117,8 @@
     function signOut(data, config) {
       var deferred = $q.defer();
 
-      $http.post(CONFIG.signOutUrl, data, config)
+      $http
+        .post(config.signOutUrl, data, config)
         .then(onSingOutSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -144,7 +151,8 @@
       }
 
       /* Reloads current session */
-      $http.put(CONFIG.updateUrl, data, config)
+      $http
+        .put(config.updateUrl, data, config)
         .then(update.bind(null, config, deferred))
         .catch(deferred.reject);
 
@@ -173,7 +181,8 @@
       }
 
       /* Retrieve current session */
-      $http.get(CONFIG.updateUrl, config)
+      $http
+        .get(config.updateUrl, config)
         .then(onSessionUpdateSuccess.bind(null, deferred))
         .catch(deferred.reject);
 
@@ -301,29 +310,27 @@
     return ngSessionServiceDef;
   }
 
-  var resolved = false;
-
   /**
    * Session resolve callback function.
    *
    * @private
    */
   function sessionResolveFn($session) {
-    if (resolved) {
-      return resolved;
-    }
+    if (updatedAt) {
+      if (ng.isBoolean(config.cache) || config.cache) {
+        return null;
+      }
 
-    resolved = true;
+      if (ng.isNumber(config.cache) || updatedAt.valueOf() + config.cache < Date.now()) {
+        return null;
+      }
+    }
 
     return $session.update();
   }
 
   /* Session resolve definition */
-  var sessionResolveDef = [
-    'ngSession',
-
-    sessionResolveFn
-  ];
+  var sessionResolveDef = ['ngSession', sessionResolveFn];
 
   /**
    * ngSession run function.
@@ -350,29 +357,40 @@
   /**
    * Configuration method.
    *
-   * @param {Object} config The configuration object.
+   * @param {Object} cfg The configuration object.
+   * @param {Object} cfg.updateUrl The session update URL (GET|PUT).
+   * @param {Object} cfg.signInUrl The session sign in URL (POST).
+   * @param {Object} cfg.signOutUrl The session sign out URL (POST).
+   * @param {Number|Boolean} cfg.cache The session cache behavior. Number is the milliseconds to cache the session for.
+   * A boolean "true" will cache the session forever.
    *
    * @example
    * ngSessionProvider.configure({
    *   signOutUrl: '/api/users/sign-out',
    *   signInUrl: '/api/users/sign-in',
-   *   updateUrl: '/api/session'
+   *   updateUrl: '/api/session',
+   *   cache: '1h'
    * });
    */
-  function configure(config) {
+  function configure(cfg) {
     /* Sets session update GET URL */
-    if (ng.isString(config.updateUrl)) {
-      CONFIG.updateUrl = config.updateUrl;
+    if (ng.isString(cfg.updateUrl)) {
+      config.updateUrl = cfg.updateUrl;
     }
 
     /* Sets sign in POST URL */
-    if (ng.isString(config.signInUrl)) {
-      CONFIG.signInUrl = config.signInUrl;
+    if (ng.isString(cfg.signInUrl)) {
+      config.signInUrl = cfg.signInUrl;
     }
 
     /* Sets sign out POST URL */
-    if (ng.isString(config.signOutUrl)) {
-      CONFIG.signOutUrl = config.signOutUrl;
+    if (ng.isString(cfg.signOutUrl)) {
+      config.signOutUrl = cfg.signOutUrl;
+    }
+
+    /* Sets the cache behavior */
+    if (ng.isNumber(cfg.cache) || ng.isBoolean(cfg.cache)) {
+      config.cache = cfg.cache;
     }
   }
 
@@ -384,11 +402,7 @@
   var ngSessionProviderDef = {
     configure: configure,
 
-    $get: [
-      '$rootScope', '$http', '$q',
-
-      ngSessionServiceFn
-    ]
+    $get: ['$rootScope', '$http', '$q', ngSessionServiceFn]
   };
 
   /**
@@ -403,10 +417,9 @@
   /* Define AngularJS module */
   ng.module('ngSession', [])
 
-  /* Define service provider */
-  .provider('ngSession', ngSessionProviderFn)
+    /* Define service provider */
+    .provider('ngSession', ngSessionProviderFn)
 
-  /* Define AngularJS module run function */
-  .run(['$route', ngSessionRunFn]);
-
-}(window));
+    /* Define AngularJS module run function */
+    .run(['$route', ngSessionRunFn]);
+})(window);

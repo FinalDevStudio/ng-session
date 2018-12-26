@@ -25,26 +25,26 @@
     function signIn(data, config) {
       var deferred = $q.defer();
       $rootScope.session.user = null;
-      $http.post(defaults.signInUrl, data, config).then(onSingInSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.post(defaults.signInUrl, data, config).then(onSingInSuccess.bind(null, deferred), deferred.reject);
       return deferred.promise;
     }
     function signOut(data, config) {
       var deferred = $q.defer();
-      $http.post(defaults.signOutUrl, data, config).then(onSingOutSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.post(defaults.signOutUrl, data, config).then(onSingOutSuccess.bind(null, deferred), deferred.reject);
       return deferred.promise;
     }
     function reload(data, config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
       }
-      $http.put(defaults.updateUrl, data, config).then(update.bind(null, config, deferred)).catch(deferred.reject);
+      $http.put(defaults.updateUrl, data, config).then(update.bind(null, config, deferred), deferred.reject);
       return deferred.promise;
     }
     function update(config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
       }
-      $http.get(defaults.updateUrl, config).then(onSessionUpdateSuccess.bind(null, deferred)).catch(deferred.reject);
+      $http.get(defaults.updateUrl, config).then(onSessionUpdateSuccess.bind(null, deferred), deferred.reject);
       return deferred.promise;
     }
     function user(prop) {
@@ -101,18 +101,23 @@
     };
     return ngSessionServiceDef;
   }
-  function sessionResolveFn($session, $q) {
+  function sessionResolveFn($session) {
+    console.log("Resolving session...");
     if (ng.isDate(updatedAt)) {
-      if (typeof cfg.cache == "boolean" && defaults.cache) {
-        return $q.resolve();
+      console.log("Updated at is date...");
+      if (typeof defaults.cache == "boolean" && defaults.cache) {
+        console.log("Cache is boolean and should not update...");
+        return;
       }
-      if (ng.isNumber(defaults.cache) && updatedAt.valueOf() + defaults.cache < Date.now()) {
-        return $q.resolve();
+      if (ng.isNumber(defaults.cache) && updatedAt.valueOf() + defaults.cache > Date.now()) {
+        console.log("Cache is number and should not update...");
+        return;
       }
     }
+    console.log("Updated at is", typeof updatedAt);
     return $session.update();
   }
-  var sessionResolveDef = [ "ngSession", "$q", sessionResolveFn ];
+  var sessionResolveDef = [ "ngSession", sessionResolveFn ];
   function ngSessionRunFn($route) {
     for (var path in $route.routes) {
       var route = $route.routes[path];

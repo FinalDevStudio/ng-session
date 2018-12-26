@@ -1,6 +1,6 @@
 {
   "name": "ng-session",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "Session handler for AngularJS",
   "main": "dist/ng-session.min.js",
   "homepage": "https://github.com/FinalDevStudio/ng-session#readme",

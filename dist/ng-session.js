@@ -33,6 +33,17 @@
       $http.post(defaults.signOutUrl, data, config).then(onSingOutSuccess.bind(null, deferred), deferred.reject);
       return deferred.promise;
     }
+    function resolve() {
+      if (ng.isDate(updatedAt)) {
+        if (typeof defaults.cache == "boolean" && defaults.cache) {
+          return $q.resolve();
+        }
+        if (ng.isNumber(defaults.cache) && updatedAt.valueOf() + defaults.cache > Date.now()) {
+          return $q.resolve();
+        }
+      }
+      return update();
+    }
     function reload(data, config, deferred) {
       if (!deferred) {
         deferred = $q.defer();
@@ -91,6 +102,7 @@
     var ngSessionServiceDef = {
       hasRole: hasRole,
       signOut: signOut,
+      resolve: resolve,
       signIn: signIn,
       reload: reload,
       update: update,
@@ -102,20 +114,7 @@
     return ngSessionServiceDef;
   }
   function sessionResolveFn($session) {
-    console.log("Resolving session...");
-    if (ng.isDate(updatedAt)) {
-      console.log("Updated at is date...");
-      if (typeof defaults.cache == "boolean" && defaults.cache) {
-        console.log("Cache is boolean and should not update...");
-        return;
-      }
-      if (ng.isNumber(defaults.cache) && updatedAt.valueOf() + defaults.cache > Date.now()) {
-        console.log("Cache is number and should not update...");
-        return;
-      }
-    }
-    console.log("Updated at is", typeof updatedAt);
-    return $session.update();
+    return $session.resolve();
   }
   var sessionResolveDef = [ "ngSession", sessionResolveFn ];
   function ngSessionRunFn($route) {

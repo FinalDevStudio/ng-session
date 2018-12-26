@@ -61,6 +61,12 @@ ngSession.signOut($scope.data)
 ```
 
 
+### ngSession.resolve() 
+
+Resolves the Session using cache if available.
+
+
+
 ### ngSession.reload(data, config, deferred) 
 
 Reloads the session user object.

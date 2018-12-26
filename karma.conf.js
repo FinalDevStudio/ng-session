@@ -15,9 +15,9 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js',
-      'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js',
-      'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-mocks.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-route.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular-mocks.js',
 
       'dist/ng-session.js',
 

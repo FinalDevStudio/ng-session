@@ -28,7 +28,8 @@ The default URLs are as follows:
 {
   signOutUrl: '/api/users/sign-out',
   signInUrl: '/api/users/sign-in',
-  updateUrl: '/api/session'
+  updateUrl: '/api/session',
+  cache: false // reload on each route change
 }
 ```
 
@@ -44,7 +45,8 @@ angular.module('MyApp').config([
     ngSessionProvider.configure({
       signOutUrl: '/my/url/for/users/sign-out',
       signInUrl: '/my/url/for/users/sign-in',
-      updateUrl: '/my/url/for/session/update'
+      updateUrl: '/my/url/for/session/update',
+      cache: 1000 * 60 * 60 // 1h (`true` means for all the app life cycle)
     });
   }
 ]);
@@ -94,7 +96,7 @@ angular.module('MyApp').controller('MyController', [
     }
 
     function afterSignIn() {
-      $scope.happiness = $session.get('happiness');      
+      $scope.happiness = $session.get('happiness');
       $scope.signingIn = false;
     }
 
